@@ -1,0 +1,28 @@
+{
+  "name": "@safareli/free",
+  "version": "0.1.0",
+  "description": "Combination of a free applicative functor and free monad",
+  "main": "free.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/safareli/free.git"
+  },
+  "keywords": [
+    "free",
+    "applicative",
+    "functor",
+    "monad"
+  ],
+  "author": "Irakli Safareli <i.safareli@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/safareli/free/issues"
+  },
+  "homepage": "https://github.com/safareli/free#readme",
+  "dependencies": {
+    "daggy": "0.0.1"
+  }
+}
