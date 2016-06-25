@@ -1,4 +1,4 @@
-import daggy from 'daggy'
+const daggy = require("daggy")
 
 if (Function.prototype.map == null) {
   Object.defineProperty(Function.prototype, 'map',{
@@ -92,4 +92,4 @@ Free.prototype.foldMap = function(interpreter, of) {
   return this.hoist(interpreter).retract(of)
 }
 
-exports default Free
+module.exports = Free
