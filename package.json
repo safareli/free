@@ -4,7 +4,7 @@
   "description": "Combination of a free applicative functor and free monad",
   "main": "free.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node --harmony-destructuring test.js"
   },
   "repository": {
     "type": "git",
@@ -24,5 +24,9 @@
   "homepage": "https://github.com/safareli/free#readme",
   "dependencies": {
     "daggy": "0.0.1"
+  },
+  "devDependencies": {
+    "fantasy-identities": "0.0.1",
+    "tape": "4.6.0"
   }
 }
