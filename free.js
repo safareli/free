@@ -12,14 +12,14 @@ if (Function.prototype.map == null) {
   })
 }
 
-const compose = (f,g) => x => f(g(x))
+const compose = (f,g) => (x) => f(g(x))
 const map = (f) => (v) => v.map(f)
 const id = x => x
 
 const Free = daggy.taggedSum({
   Pure: ['x'],
   Lift: ['x', 'f'],
-  Ap:   ['x', 'f'],
+  Ap:   ['x', 'y'],
   Join: ['x'],
 })
 
@@ -29,9 +29,9 @@ Free.Lift.toString = () => 'Free.Lift'
 Free.Join.toString = () => 'Free.Join'
 Free.prototype.toString = function() {
   return this.cata({
-    Pure: (a)    => `Pure(${a})`,
-    Lift: (x, g) => `Lift(${x},${g})`,
-    Ap:   (x, g) => `Ap(${x},${g})`,
+    Pure: (x)    => `Pure(${x})`,
+    Lift: (x, f) => `Lift(${x},${f})`,
+    Ap:   (x, y) => `Ap(${x},${y})`,
     Join: (x)    => `Join(${x})`,
   })
 }
@@ -71,7 +71,7 @@ Free.prototype.hoist = function(f) {
   return this.cata({
     Pure: (x)    => Free.Pure(x),
     Lift: (x, g) => Free.Lift(f(x), g),
-    Ap:   (x, g) => Free.Ap(x.hoist(f), g.hoist(f)),
+    Ap:   (x, y) => Free.Ap(x.hoist(f), y.hoist(f)),
     Join: (x)  => Free.Join(x.map(hoist(f)).hoist(f)),
   })
 }
