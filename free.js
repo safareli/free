@@ -66,29 +66,21 @@ Free.prototype.chain = function(f) {
   })
 }
 
-const hoist = (f) => (a) => a.hoist(f)
 Free.prototype.hoist = function(f) {
-  return this.cata({
-    Pure: (x)    => Free.Pure(x),
-    Lift: (x, g) => Free.Lift(f(x), g),
-    Ap:   (x, y) => Free.Ap(x.hoist(f), y.hoist(f)),
-    Join: (x)  => Free.Join(x.map(hoist(f)).hoist(f)),
-  })
+  return this.foldMap(compose(Free.liftF, f), Free.of)
 }
 
-const retract = (of) => (a) => a.retract(of)
-const join = (a) => a.chain(id)
 Free.prototype.retract = function(of) {
+  return this.foldMap(id, of)
+}
+
+Free.prototype.foldMap = function(f, of) {
   return this.cata({
     Pure: (x)    => of(x),
-    Lift: (x, g) => x.map(g),
-    Ap:   (x, y) => y.retract(of).ap(x.retract(of)),
-    Join: (x)  => compose(join, retract(of))(x.map(retract(of)))
+    Lift: (x, g) => f(x).map(g),
+    Ap:   (x, y) => y.foldMap(f, of).ap(x.foldMap(f, of)),
+    Join: (x)  => x.map((a) => a.foldMap(f, of)).foldMap(f, of).chain(id),
   })
-}
-
-Free.prototype.foldMap = function(interpreter, of) {
-  return this.hoist(interpreter).retract(of)
 }
 
 Free.prototype.graft = function(f) {
