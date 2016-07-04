@@ -1,7 +1,6 @@
 const Identity = require('fantasy-identities')
-const test = require('tape');
+const test = require('tape')
 const Free = require('./free.js')
-
 
 test('hoist', t => {
   const tree = Free.liftF(1).chain(
@@ -12,12 +11,11 @@ test('hoist', t => {
 
   t.deepEqual(
     tree.hoist((a) => a + 2).foldMap((a) => Identity(a), Identity).x,
-    [3,4],
+    [3, 4],
     'should add 2 to all instructions in Free'
   )
   t.end()
 })
-
 
 test('graft', t => {
   // not the best test but at least it tests
@@ -33,7 +31,7 @@ test('graft', t => {
     '2.txt': '[2.content.2]',
     '3.txt': '[3.content.3]',
     '4.txt': '[4.content.4]',
-  };
+  }
 
   const tree = (
     io.read('1.txt').chain(text1 =>
@@ -57,15 +55,15 @@ test('graft', t => {
 
   var counter = 0
   const ioToIdentity = (a) => {
-    if(a.type == 'read'){
-      return Identity(memFS[a.path]);
-    } else if(a.type == 'write') {
-      memFS[a.path] = `{${a.text}:${counter}}`;
-      counter++;
-      return Identity(null);
-    } else if(a.type == 'del') {
-      delete memFS[a.path];
-      return Identity(null);
+    if (a.type === 'read') {
+      return Identity(memFS[a.path])
+    } else if (a.type === 'write') {
+      memFS[a.path] = `{${a.text}:${counter}}`
+      counter++
+      return Identity(null)
+    } else if (a.type === 'del') {
+      delete memFS[a.path]
+      return Identity(null)
     }
     // we have not implemented `move`
   }
@@ -73,17 +71,19 @@ test('graft', t => {
   tree.graft((a) => {
     // we graft alternative free structure which
     // dosn't uses move but still moves file
-    if (a.type == 'move') {
-        return io.read(a.from).chain((fromtxt) =>
-          io.write(fromtxt, a.to).chain(()=>
-          io.del(a.from)));
+    if (a.type === 'move') {
+      return (
+        io.read(a.from).chain((fromtxt) =>
+        io.write(fromtxt, a.to).chain(() =>
+        io.del(a.from)))
+      )
     // graft some more trees
-    } if (a.type == 'read' && a.path =='2.txt') {
-        return Free.liftF(a).chain((r) => tree3.chain(() => Free.of(r)));
-    } else if (a.type == 'read' && a.path =='1.txt') {
-        return tree2.chain((tree2)=> Free.liftF(a));
+    } if (a.type === 'read' && a.path === '2.txt') {
+      return Free.liftF(a).chain((r) => tree3.chain(() => Free.of(r)))
+    } else if (a.type === 'read' && a.path === '1.txt') {
+      return tree2.chain((tree2) => Free.liftF(a))
     } else {
-      return Free.liftF(a);
+      return Free.liftF(a)
     }
   }).foldMap(ioToIdentity, Identity)
 
