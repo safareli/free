@@ -1,6 +1,6 @@
 const Identity = require('fantasy-identities')
 const test = require('tape')
-const Free = require('./free.js')
+const Free = require('../src/free.js')
 
 test('hoist', t => {
   const tree = Free.liftF(1).chain(

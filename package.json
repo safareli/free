@@ -2,10 +2,10 @@
   "name": "@safareli/free",
   "version": "0.0.0-placeholder",
   "description": "Combination of a free applicative functor and free monad",
-  "main": "free.js",
+  "main": "src/free.js",
   "scripts": {
-    "lint": "eslint *.js",
-    "test": "node --harmony-destructuring test.js",
+    "lint": "eslint src test --ext js",
+    "test": "node --harmony-destructuring test/*.js",
     "check": "npm run lint && npm run test",
     "commit": "git-cz",
     "semantic-release": "semantic-release pre && npm publish && semantic-release post"
