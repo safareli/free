@@ -1,14 +1,16 @@
 {
   "name": "@safareli/free",
-  "version": "0.1.0",
+  "version": "0.0.0-placeholder",
   "description": "Combination of a free applicative functor and free monad",
   "main": "free.js",
   "scripts": {
-    "test": "node --harmony-destructuring test.js"
+    "test": "node --harmony-destructuring test.js",
+    "commit": "git-cz",
+    "semantic-release": "semantic-release pre && npm publish && semantic-release post"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/safareli/free.git"
+    "url": "https://github.com/safareli/free.git"
   },
   "keywords": [
     "free",
@@ -26,7 +28,15 @@
     "daggy": "0.0.1"
   },
   "devDependencies": {
+    "commitizen": "2.8.2",
+    "cz-conventional-changelog": "1.1.6",
     "fantasy-identities": "0.0.1",
+    "semantic-release": "^4.3.5",
     "tape": "4.6.0"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
   }
 }
