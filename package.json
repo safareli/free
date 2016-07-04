@@ -10,7 +10,7 @@
     "commit": "git-cz",
     "prebuild": "rimraf dist",
     "build": "run-p build:*",
-    "build:main": "babel --out-dir dist src",
+    "build:main": "babel -s --out-dir dist src",
     "build:umd": "webpack --output-filename free.umd.js",
     "build:umd.min": "webpack --output-filename free.umd.min.js -p",
     "semantic-release": "semantic-release pre && npm publish && semantic-release post"
