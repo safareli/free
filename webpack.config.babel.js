@@ -13,6 +13,6 @@ export default {
   module: {
     loaders: [
       {test: /\.js$/, loader: 'babel', include},
-    ]
-  }
+    ],
+  },
 }
