@@ -4,7 +4,7 @@
   "description": "Combination of a free applicative functor and free monad",
   "main": "dist/free.js",
   "scripts": {
-    "lint": "eslint src test --ext js",
+    "lint": "eslint --no-ignore .eslintrc.js --ext js src test *.js ",
     "watch": "nodemon -q -x 'npm run test:pure'",
     "test": "nyc npm run test:pure",
     "test:pure": "cross-env NODE_ENV=test tape -r babel-core/register test/*.js",

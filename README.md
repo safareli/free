@@ -1,4 +1,4 @@
-# Free [![Build Status][build-image]][build] [![npm Version][version-image]][version] [![Code Coverage][coverage-image]][coverage] [![License][license-image]][license]
+# Free [![Build Status][build-image]][build] [![npm Version][version-image]][version] [![Code Coverage][coverage-image]][coverage] [![Code Climate][climate-image]][climate] [![License][license-image]][license]
 
 > Combination of a Free applicative functor and Free monad.
 
@@ -48,6 +48,9 @@ This module was started as port of [srijs/haskell-free-concurrent][haskell-free-
 
 [coverage-image]: https://img.shields.io/codecov/c/github/safareli/free/master.svg
 [coverage]: https://codecov.io/gh/safareli/free/branch/master
+
+[climate-image]: https://img.shields.io/codeclimate/github/safareli/free.svg
+[climate]: https://codeclimate.com/github/safareli/free
 
 [license-image]: https://img.shields.io/github/license/safareli/free.svg
 [license]: https://github.com/safareli/free/blob/master/LICENSE
