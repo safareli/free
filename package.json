@@ -7,7 +7,7 @@
     "lint": "eslint --no-ignore .eslintrc.js --ext js src test *.js ",
     "watch": "nodemon -q -x 'tap test/*.js'",
     "test": "tap test/*.js --coverage",
-    "coverage": "codecov",
+    "coverage": "tap --coverage-report=lcov --no-browser && codecov",
     "check": "npm run lint && npm run test",
     "commit": "git-cz",
     "prebuild": "rimraf dist",
