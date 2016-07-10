@@ -1,6 +1,6 @@
-import Identity from 'fantasy-identities'
-import test from 'tape'
-import Free from '../src/free.js'
+const Identity = require('fantasy-identities')
+const test = require('tape')
+const Free = require('../src/free.js')
 
 test('hoist', t => {
   const tree = Free.liftF(1).chain(

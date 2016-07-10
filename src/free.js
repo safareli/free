@@ -1,4 +1,4 @@
-import daggy from 'daggy'
+const daggy = require('daggy')
 
 if (Function.prototype.map == null) {
   // eslint-disable-next-line no-extend-native
@@ -88,4 +88,4 @@ Free.prototype.graft = function(f) {
   return this.foldMap(f, Free.of)
 }
 
-export default Free
+module.exports = Free
