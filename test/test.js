@@ -1,5 +1,5 @@
 const Identity = require('fantasy-identities')
-const test = require('tape')
+const { test } = require('tap')
 const Free = require('../src/free.js')
 
 test('hoist', t => {
