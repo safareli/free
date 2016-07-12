@@ -5,11 +5,11 @@
   "main": "dist/free.js",
   "scripts": {
     "lint": "eslint --no-ignore .eslintrc.js --ext js src test *.js ",
-    "watch": "nodemon -q -x 'npm run test:pure'",
-    "test": "nyc npm run test:pure",
-    "test:pure": "cross-env NODE_ENV=test tape -r babel-core/register test/*.js",
-    "coverage": "nyc report --reporter=lcov && codecov",
-    "check": "npm run lint && npm run test",
+    "watch": "nodemon -q -x 'tap -R spec test/*.js'",
+    "test": "tap test/*.js --coverage",
+    "coverage": "tap --coverage-report=lcov --no-browser && codecov",
+    "coverage:check": "tap --check-coverage --branches 95 --functions 95 --lines 95 --statements 95",
+    "check": "npm run lint && npm run test --  --no-coverage-report && npm run coverage:check",
     "commit": "git-cz",
     "prebuild": "rimraf dist",
     "build": "run-p build:*",
@@ -47,48 +47,33 @@
     "babel-core": "6.10.4",
     "babel-eslint": "6.1.0",
     "babel-loader": "6.2.4",
-    "babel-plugin-__coverage__": "11.0.0",
     "babel-preset-es2015": "6.9.0",
     "babel-preset-stage-2": "6.11.0",
     "codecov": "1.0.1",
     "commitizen": "2.8.2",
-    "cross-env": "1.0.8",
     "cz-conventional-changelog": "1.1.6",
+    "data.task": "3.1.0",
     "eslint": "2.13.1",
     "eslint-config-standard": "5.3.1",
     "eslint-plugin-promise": "1.3.2",
     "eslint-plugin-standard": "1.3.2",
+    "fantasy-combinators": "0.0.1",
     "fantasy-identities": "0.0.1",
     "ghooks": "1.3.0",
+    "jsverify": "0.7.1",
     "nodemon": "1.9.2",
     "npm-run-all": "2.3.0",
-    "nyc": "6.6.1",
+    "ramda": "0.21.0",
     "rimraf": "2.5.3",
     "semantic-release": "^4.3.5",
-    "tape": "4.6.0",
+    "tap": "6.1.1",
     "webpack": "1.13.1"
   },
   "babel": {
     "presets": [
       "es2015",
       "stage-2"
-    ],
-    "env": {
-      "test": {
-        "plugins": [
-          [
-            "__coverage__",
-            {
-              "only": "src/"
-            }
-          ]
-        ]
-      }
-    }
-  },
-  "nyc": {
-    "sourceMap": false,
-    "instrument": false
+    ]
   },
   "config": {
     "commitizen": {

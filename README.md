@@ -15,7 +15,7 @@ Free implements [Functor](https://github.com/fantasyland/fantasy-land#functor), 
 - Free.prototype.`chain :: Free i a -> (a -> Free i b) -> Free i b`
 
 
-### Free structure manipulation functions:
+### Free structure functions:
 
 - Free.prototype.`hoist :: Free i a -> (i -> z) -> Free z a`
 - Free.`liftF :: i -> Free i a`
@@ -23,18 +23,13 @@ Free implements [Functor](https://github.com/fantasyland/fantasy-land#functor), 
 - Free.prototype.`graft :: Free i a -> (i -> Free z a) -> Free z a`
 - Free.prototype.`foldMap :: Monad m => Free i a -> (i -> m a) -> (a -> m a) -> m a`
 
-### Free Laws?
+### Free structure function equivalencies
 
-```js
-graft(f) = foldMap(f, Free.of)
+- `graft(f) ≡ foldMap(f, Free.of)`
+- `hoist(f) ≡ foldMap(compose(liftF, f), Free.of)`
+- `retract(of) ≡ foldMap(id, of)`
+- `foldMap(f, of) ≡ compose(retract(of), hoist(f))`
 
-// as map(f) = chain(compose(of, f))
-hoist(f) = graft(compose(liftF, f)) = foldMap(compose(liftF, f), Free.of)
-
-retract(of) = foldMap(id, of)
-
-foldMap(f,of) = compose(retract(of), hoist(f))
-```
 ---
 
 This module was started as port of [srijs/haskell-free-concurrent][haskell-free-concurrent] to JavaScript.
