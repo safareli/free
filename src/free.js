@@ -1,5 +1,6 @@
 const daggy = require('daggy')
 
+/* istanbul ignore else */
 if (Function.prototype.map == null) {
   // eslint-disable-next-line no-extend-native
   Object.defineProperty(Function.prototype, 'map', {
