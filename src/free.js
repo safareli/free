@@ -30,10 +30,10 @@ Free.Lift.toString = () => 'Free.Lift'
 Free.Join.toString = () => 'Free.Join'
 Free.prototype.toString = function() {
   return this.cata({
-    Pure: (x) => `Pure(${x})`,
-    Lift: (x, f) => `Lift(${x},${f})`,
-    Ap: (x, y) => `Ap(${x},${y})`,
-    Join: (x) => `Join(${x})`,
+    Pure: (x) => `Free.Pure(${x})`,
+    Lift: (x, f) => `Free.Lift(${x},=>)`,
+    Ap: (x, y) => `Free.Ap(${x},${y})`,
+    Join: (x) => `Free.Join(${x})`,
   })
 }
 
