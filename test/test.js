@@ -2,21 +2,6 @@ const Identity = require('fantasy-identities')
 const { test } = require('tap')
 const { Free } = require('./lib')
 
-test('toString', t => {
-  const tree = Free.liftF(1).map((a) => (b) => Free.of([a, b])).ap(Free.of(10)).chain(Free.of)
-  const constructorCases = [
-    [Free.Pure, 'Free.Pure'],
-    [Free.Ap, 'Free.Ap'],
-    [Free.Lift, 'Free.Lift'],
-    [Free.Join, 'Free.Join'],
-  ]
-  t.is(tree.toString(), 'Free.Join(Free.Ap(Free.Pure(10),Free.Lift(1,=>)))', 'should return String representation of structure')
-  constructorCases.forEach(([constructor, str]) => {
-    t.is(constructor.toString(), str, `toString of constructors should be ${str}`)
-  })
-  t.end()
-})
-
 test('hoist', t => {
   const tree = Free.liftF(1).chain(
     a => Free.liftF(2).chain(

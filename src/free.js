@@ -25,10 +25,15 @@ const Free = daggy.taggedSum({
   Join: ['x'],
 })
 
+/* istanbul ignore next */
 Free.Pure.toString = () => 'Free.Pure'
+/* istanbul ignore next */
 Free.Ap.toString = () => 'Free.Ap'
+/* istanbul ignore next */
 Free.Lift.toString = () => 'Free.Lift'
 Free.Join.toString = () => 'Free.Join'
+/* istanbul ignore next */
+/* istanbul ignore next */
 Free.prototype.toString = function() {
   return this.cata({
     Pure: (x) => `Free.Pure(${x})`,
