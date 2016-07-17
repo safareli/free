@@ -1,3 +1,8 @@
+// data Free i a
+//   = Ap { x: (Free i b), y: (Free i (b -> a)) }
+//   | Pure { x: a }
+//   | Lift { x: i, f: (b -> a) }
+//   | Chain { x: (Free i b), f: (b -> (Free i a)) }
 function Free() {
   throw new TypeError('No direct use of Free constructor is Allowed')
 }
@@ -34,20 +39,22 @@ Ap.prototype = Object.create(Free.prototype)
 Ap.prototype.constructor = Ap
 Ap.prototype.cata = function(d) { return d.Ap(this.x, this.y) }
 
-function Join(x) {
-  if (!(this instanceof Join)) {
-    return new Join(x)
+function Chain(x, f) {
+  if (!(this instanceof Chain)) {
+    return new Chain(x, f)
   }
   this.x = x
+  this.f = f
 }
-Join.prototype = Object.create(Free.prototype)
-Join.prototype.constructor = Join
-Join.prototype.cata = function(d) { return d.Join(this.x) }
+
+Chain.prototype = Object.create(Free.prototype)
+Chain.prototype.constructor = Chain
+Chain.prototype.cata = function(d) { return d.Chain(this.x, this.f) }
 
 Free.Pure = Pure
 Free.Ap = Ap
 Free.Lift = Lift
-Free.Join = Join
+Free.Chain = Chain
 
 /* istanbul ignore else */
 if (Function.prototype.map == null) {
@@ -73,15 +80,15 @@ Free.Pure.toString = () => 'Free.Pure'
 Free.Ap.toString = () => 'Free.Ap'
 /* istanbul ignore next */
 Free.Lift.toString = () => 'Free.Lift'
-Free.Join.toString = () => 'Free.Join'
 /* istanbul ignore next */
+Free.Chain.toString = () => 'Free.Chain'
 /* istanbul ignore next */
 Free.prototype.toString = function() {
   return this.cata({
     Pure: (x) => `Free.Pure(${x})`,
     Lift: (x, f) => `Free.Lift(${x},=>)`,
     Ap: (x, y) => `Free.Ap(${x},${y})`,
-    Join: (x) => `Free.Join(${x})`,
+    Chain: (x, f) => `Free.Chain(${x},=>)`,
   })
 }
 
@@ -93,7 +100,7 @@ Free.prototype.map = function(f) {
     Pure: (x) => Free.Pure(f(x)),
     Lift: (x, g) => Free.Lift(x, compose(f, g)),
     Ap: (x, y) => Free.Ap(x, y.map(map(f))),
-    Join: (x) => Free.Join(x.map(map(f))),
+    Chain: (x, g) => Free.Chain(x, (a) => g(a).map(f)),
   })
 }
 
@@ -102,16 +109,16 @@ Free.prototype.ap = function(y) {
     Pure: (f) => y.map(f),
     Ap: () => Free.Ap(y, this),
     Lift: () => Free.Ap(y, this),
-    Join: () => Free.Ap(y, this),
+    Chain: () => Free.Ap(y, this),
   })
 }
 
 Free.prototype.chain = function(f) {
   return this.cata({
     Pure: (x) => f(x),
-    Ap: () => Free.Join(this.map(f)),
-    Lift: () => Free.Join(this.map(f)),
-    Join: () => Free.Join(this.map(f)),
+    Ap: () => Free.Chain(this, f),
+    Lift: () => Free.Chain(this, f),
+    Chain: (x, g) => Free.Chain(x, (v) => g(v).chain(f)),
   })
 }
 
@@ -128,7 +135,7 @@ Free.prototype.foldMap = function(f, of) {
     Pure: (x) => of(x),
     Lift: (x, g) => f(x).map(g),
     Ap: (x, y) => y.foldMap(f, of).ap(x.foldMap(f, of)),
-    Join: (x) => x.map((a) => a.foldMap(f, of)).foldMap(f, of).chain(id),
+    Chain: (x, g) => x.foldMap(f, of).chain((a) => g(a).foldMap(f, of)),
   })
 }
 
