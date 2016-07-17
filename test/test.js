@@ -2,6 +2,11 @@ const Identity = require('fantasy-identities')
 const { test } = require('tap')
 const { Free } = require('./lib')
 
+test('Free', t => {
+  t.throws(() => Free(), 'Calling Free directly throws')
+  t.end()
+})
+
 test('hoist', t => {
   const tree = Free.liftF(1).chain(
     a => Free.liftF(2).chain(

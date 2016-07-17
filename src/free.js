@@ -1,4 +1,53 @@
-const daggy = require('daggy')
+function Free() {
+  throw new TypeError('No direct use of Free constructor is Allowed')
+}
+
+function Pure(x) {
+  if (!(this instanceof Pure)) {
+    return new Pure(x)
+  }
+  this.x = x
+}
+Pure.prototype = Object.create(Free.prototype)
+Pure.prototype.constructor = Pure
+Pure.prototype.cata = function(d) { return d.Pure(this.x) }
+
+function Lift(x, f) {
+  if (!(this instanceof Lift)) {
+    return new Lift(x, f)
+  }
+  this.x = x
+  this.f = f
+}
+Lift.prototype = Object.create(Free.prototype)
+Lift.prototype.constructor = Lift
+Lift.prototype.cata = function(d) { return d.Lift(this.x, this.f) }
+
+function Ap(x, y) {
+  if (!(this instanceof Ap)) {
+    return new Ap(x, y)
+  }
+  this.x = x
+  this.y = y
+}
+Ap.prototype = Object.create(Free.prototype)
+Ap.prototype.constructor = Ap
+Ap.prototype.cata = function(d) { return d.Ap(this.x, this.y) }
+
+function Join(x) {
+  if (!(this instanceof Join)) {
+    return new Join(x)
+  }
+  this.x = x
+}
+Join.prototype = Object.create(Free.prototype)
+Join.prototype.constructor = Join
+Join.prototype.cata = function(d) { return d.Join(this.x) }
+
+Free.Pure = Pure
+Free.Ap = Ap
+Free.Lift = Lift
+Free.Join = Join
 
 /* istanbul ignore else */
 if (Function.prototype.map == null) {
@@ -17,13 +66,6 @@ if (Function.prototype.map == null) {
 const compose = (f, g) => (x) => f(g(x))
 const map = (f) => (v) => v.map(f)
 const id = x => x
-
-const Free = daggy.taggedSum({
-  Pure: ['x'],
-  Lift: ['x', 'f'],
-  Ap: ['x', 'y'],
-  Join: ['x'],
-})
 
 /* istanbul ignore next */
 Free.Pure.toString = () => 'Free.Pure'

@@ -39,9 +39,6 @@
     "url": "https://github.com/safareli/free/issues"
   },
   "homepage": "https://github.com/safareli/free#readme",
-  "dependencies": {
-    "daggy": "0.0.1"
-  },
   "devDependencies": {
     "babel-cli": "6.10.1",
     "babel-core": "6.10.4",
