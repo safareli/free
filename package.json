@@ -75,7 +75,7 @@
     ]
   },
   "release": {
-    "analyzeCommits": "./misc/releaseAnalyzeCommits"
+    "analyzeCommits": "./tools/releaseAnalyzeCommits"
   },
   "config": {
     "commitizen": {
