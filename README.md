@@ -23,7 +23,7 @@ Free implements [Functor](https://github.com/fantasyland/fantasy-land#functor), 
 - Free.prototype.`graft :: Free i a -> (i -> Free z a) -> Free z a`
 - Free.prototype.`foldMap :: Monad m => Free i a -> (i -> m a) -> (a -> m a) -> m a`
 
-### Free structure function equivalencies
+### Free structure function equivalencies:
 
 - `graft(f) ≡ foldMap(f, Free.of)`
 - `hoist(f) ≡ foldMap(compose(liftF, f), Free.of)`
