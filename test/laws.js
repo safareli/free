@@ -2,16 +2,24 @@ const Ɐ = require('jsverify')
 const Identity = require('fantasy-identities')
 const { test } = require('tap')
 const { Free } = require('./lib')
-const laws = require('./lib/laws/')
 const equals = require('ramda/src/equals')
-const unnest = require('ramda/src/unnest')
+const lawMonad = require('fantasy-land/laws/monad.js')
+const lawApplicative = require('fantasy-land/laws/applicative.js')
+const lawFunctor = require('fantasy-land/laws/functor.js')
 
 test('Check laws', (t) => {
-  for (let [title, law] of unnest([laws.functor, laws.applicative, laws.monad])) {
-    t.notThrow(() => {
-      Ɐ.assert(Ɐ.forall(Ɐ.any, law(Free.of, equals)))
-    }, title)
+  const testLaw = (law, lawTitle, args) => {
+    for (let key of Object.keys(law)) {
+      t.notThrow(() => {
+        Ɐ.assert(Ɐ.forall(Ɐ.any, args.reduce((f, a) => f(a), law[key])))
+      }, `${lawTitle}: ${key}`)
+    }
   }
+
+  testLaw(lawMonad, 'Monad', [Free, equals])
+  testLaw(lawApplicative, 'Applicative', [Free, equals])
+  testLaw(lawFunctor, 'Functor', [Free.of, equals])
+
   t.end()
 })
 
