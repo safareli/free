@@ -1,6 +1,5 @@
 const { test } = require('tap')
-const { Free } = require('./lib')
-const Task = require('data.task')
+const { Free, Future } = require('./lib')
 
 test('Check for concurrency', (t) => {
   const shout = (tag, ms) => Free.liftF({tag: `${tag}.${ms}`, ms})
@@ -28,13 +27,13 @@ test('Check for concurrency', (t) => {
     )
     .ap(shout('out.ap', 10))
 
-    .foldMap(({tag, ms}) => new Task((rej, res) => {
+    .foldMap(({tag, ms}) => Future((rej, res) => {
       orders.start.push(tag)
       setTimeout(() => {
         orders.end.push(tag)
         res(tag)
       }, ms)
-    }), Task.of)
+    }), Future)
     .fork(() => {}, (result) => {
       t.same(orders, {
         end: [

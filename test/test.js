@@ -1,6 +1,5 @@
-const Identity = require('fantasy-identities')
 const { test } = require('tap')
-const { Free } = require('./lib')
+const { Free, Identity } = require('./lib')
 
 test('Free', t => {
   t.throws(() => Free(), 'Calling Free directly throws')
@@ -15,8 +14,8 @@ test('hoist', t => {
   )
 
   t.deepEqual(
-    tree.hoist((a) => a + 2).foldMap((a) => Identity(a), Identity).x,
-    [3, 4],
+    tree.hoist((a) => a + 2).foldMap((a) => Identity(a), Identity),
+    Identity.of([3, 4]),
     'should add 2 to all instructions in Free'
   )
   t.end()

@@ -19,16 +19,16 @@ Free implements [Functor](https://github.com/fantasyland/fantasy-land#functor), 
 
 - Free.prototype.`hoist :: Free i a -> (i -> z) -> Free z a`
 - Free.`liftF :: i -> Free i a`
-- Free.prototype.`retract :: Monad m => Free m a -> (a -> m a) -> m a`
+- Free.prototype.`retract :: (ChainRec m, Monad m) => Free m a -> m -> m a`
 - Free.prototype.`graft :: Free i a -> (i -> Free z a) -> Free z a`
-- Free.prototype.`foldMap :: Monad m => Free i a -> (i -> m a) -> (a -> m a) -> m a`
+- Free.prototype.`foldMap :: (ChainRec m, Monad m) => Free i a -> (i -> m a) -> m -> m a`
 
 ### Free structure function equivalencies:
 
-- `graft(f) ≡ foldMap(f, Free.of)`
-- `hoist(f) ≡ foldMap(compose(liftF, f), Free.of)`
-- `retract(of) ≡ foldMap(id, of)`
-- `foldMap(f, of) ≡ compose(retract(of), hoist(f))`
+- `graft(f) ≡ foldMap(f, Free)`
+- `hoist(f) ≡ foldMap(compose(liftF, f), Free)`
+- `retract(M) ≡ foldMap(id, M)`
+- `foldMap(f, M) ≡ compose(retract(M), hoist(f))`
 
 ---
 

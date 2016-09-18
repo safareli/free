@@ -123,24 +123,31 @@ Free.prototype.chain = function(f) {
 }
 
 Free.prototype.hoist = function(f) {
-  return this.foldMap(compose(Free.liftF, f), Free.of)
+  return this.foldMap(compose(Free.liftF, f), Free)
 }
 
-Free.prototype.retract = function(of) {
-  return this.foldMap(id, of)
+Free.prototype.retract = function(m) {
+  return this.foldMap(id, m)
 }
 
-Free.prototype.foldMap = function(f, of) {
-  return this.cata({
-    Pure: (x) => of(x),
-    Lift: (x, g) => f(x).map(g),
-    Ap: (x, y) => y.foldMap(f, of).ap(x.foldMap(f, of)),
-    Chain: (x, g) => x.foldMap(f, of).chain((a) => g(a).foldMap(f, of)),
-  })
+Free.prototype.foldMap = function(f, m) {
+  return m.chainRec((next, done, v) => v.cata({
+    Pure: (x) => m.of(x).map(done),
+    Lift: (x, g) => f(x).map(g).map(done),
+    Ap: (x, y) => y.foldMap(f, m).ap(x.foldMap(f, m)).map(done),
+    Chain: (x, g) => x.foldMap(f, m).map(g).map(next),
+  }), this)
 }
 
 Free.prototype.graft = function(f) {
-  return this.foldMap(f, Free.of)
+  return this.foldMap(f, Free)
 }
+
+const chainRecNext = (value) => ({ done: false, value })
+const chainRecDone = (value) => ({ done: true, value })
+
+Free.chainRec = (f, i) => f(chainRecNext, chainRecDone, i).chain(
+  ({ done, value }) => done ? Free.of(value) : Free.chainRec(f, value)
+)
 
 module.exports = Free
