@@ -62,7 +62,7 @@
     "nodemon": "1.9.2",
     "npm-run-all": "2.3.0",
     "ramda": "0.21.0",
-    "ramda-fantasy": "git@github.com:ramda/ramda-fantasy.git#8675e8086afada93390df0957a1e73a004e878d2",
+    "ramda-fantasy": "0.7.0",
     "rimraf": "2.5.3",
     "semantic-release": "^4.3.5",
     "tap": "6.1.1",
