@@ -1,3 +1,6 @@
+const { of, map, ap, chain } = require('sanctuary-type-classes')
+const patchAll = require('./fl-patch')
+
 // data Free i a
 //   = Ap { x: (Free i b), y: (Free i (b -> a)) }
 //   | Pure { x: a }
@@ -56,22 +59,7 @@ Free.Ap = Ap
 Free.Lift = Lift
 Free.Chain = Chain
 
-/* istanbul ignore else */
-if (Function.prototype.map == null) {
-  // eslint-disable-next-line no-extend-native
-  Object.defineProperty(Function.prototype, 'map', {
-    value: function(g) {
-      const f = this
-      return function(x) { return g(f(x)) }
-    },
-    writable: true,
-    configurable: true,
-    enumerable: false,
-  })
-}
-
 const compose = (f, g) => (x) => f(g(x))
-const map = (f) => (v) => v.map(f)
 const id = x => x
 
 /* istanbul ignore next */
@@ -99,17 +87,17 @@ Free.prototype.map = function(f) {
   return this.cata({
     Pure: (x) => Free.Pure(f(x)),
     Lift: (x, g) => Free.Lift(x, compose(f, g)),
-    Ap: (x, y) => Free.Ap(x, y.map(map(f))),
-    Chain: (x, g) => Free.Chain(x, (a) => g(a).map(f)),
+    Ap: (x, y) => Free.Ap(x, map((a) => map(f, a), y)),
+    Chain: (x, g) => Free.Chain(x, (a) => map(f, g(a))),
   })
 }
 
 Free.prototype.ap = function(y) {
   return this.cata({
-    Pure: (f) => y.map(f),
-    Ap: () => Free.Ap(y, this),
-    Lift: () => Free.Ap(y, this),
-    Chain: () => Free.Ap(y, this),
+    Pure: (x) => map((f) => f(x), y),
+    Ap: () => Free.Ap(this, y),
+    Lift: () => Free.Ap(this, y),
+    Chain: () => Free.Ap(this, y),
   })
 }
 
@@ -118,7 +106,7 @@ Free.prototype.chain = function(f) {
     Pure: (x) => f(x),
     Ap: () => Free.Chain(this, f),
     Lift: () => Free.Chain(this, f),
-    Chain: (x, g) => Free.Chain(x, (v) => g(v).chain(f)),
+    Chain: (x, g) => Free.Chain(x, (v) => chain(f, g(v))),
   })
 }
 
@@ -132,10 +120,10 @@ Free.prototype.retract = function(m) {
 
 Free.prototype.foldMap = function(f, m) {
   return m.chainRec((next, done, v) => v.cata({
-    Pure: (x) => m.of(x).map(done),
-    Lift: (x, g) => f(x).map(g).map(done),
-    Ap: (x, y) => y.foldMap(f, m).ap(x.foldMap(f, m)).map(done),
-    Chain: (x, g) => x.foldMap(f, m).map(g).map(next),
+    Pure: (x) => map(done, of(m, x)),
+    Lift: (x, g) => map(compose(done, g), f(x)),
+    Ap: (x, y) => map(done, ap(y.foldMap(f, m), x.foldMap(f, m))),
+    Chain: (x, g) => map(compose(next, g), x.foldMap(f, m)),
   }), this)
 }
 
@@ -146,8 +134,11 @@ Free.prototype.graft = function(f) {
 const chainRecNext = (value) => ({ done: false, value })
 const chainRecDone = (value) => ({ done: true, value })
 
-Free.chainRec = (f, i) => f(chainRecNext, chainRecDone, i).chain(
-  ({ done, value }) => done ? Free.of(value) : Free.chainRec(f, value)
+Free.chainRec = (f, i) => chain(
+  ({ done, value }) => done ? Free.of(value) : Free.chainRec(f, value),
+  f(chainRecNext, chainRecDone, i)
 )
+
+patchAll([Free, Free.prototype])
 
 module.exports = Free

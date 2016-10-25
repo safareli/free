@@ -1,32 +1,36 @@
 const { test } = require('tap')
-const { Free, Future } = require('./lib')
+const { Free, Future, ap, lift2, lift3 } = require('./lib')
 
 test('Check for concurrency', (t) => {
   const shout = (tag, ms) => Free.liftF({tag: `${tag}.${ms}`, ms})
   const pear3 = x => y => z => [x, y, z]
-  let orders = { start: [], end: [] }
-  Free.of(pear3)
-    .ap(shout('out.ap', 500))
-    .ap(shout('out.ap', 400))
-    .ap(
-      Free.of(pear3)
-        .ap(shout('out.ap', 100))
-        .ap(shout('out.ap', 300))
-        .ap(shout('out.ap', 200))
-        .chain((tout) => {
-          return Free.of(pear3)
-            .ap(shout('in.ap', 50))
-            .ap(shout('in.ap', 250))
-            .ap(shout('in.ap', 150))
-            .map((tin) => [tout, tin])
-        })
-    ).chain((tout) => Free.of(pear3)
-      .ap(shout('in.ap', 40))
-      .ap(shout('in.ap', 140))
-      .map((f) => (a) => [tout, f(a)])
-    )
-    .ap(shout('out.ap', 10))
 
+  let orders = { start: [], end: [] }
+  ap(
+    lift3(
+      pear3,
+      shout('out.ap', 500),
+      shout('out.ap', 400),
+      lift3(
+        pear3,
+        shout('out.ap', 100),
+        shout('out.ap', 300),
+        shout('out.ap', 200)
+      ).chain((tout) =>
+        lift3(pear3,
+          shout('in.ap', 50),
+          shout('in.ap', 250),
+          shout('in.ap', 150)
+        ).map((tin) => [tout, tin])
+      )
+    ).chain((tout) =>
+      lift2(pear3,
+        shout('in.ap', 40),
+        shout('in.ap', 140)
+      ).map((f) => (a) => [tout, f(a)])
+    ),
+    shout('out.ap', 10).ap(Free.of((a) => a))
+  )
     .foldMap(({tag, ms}) => Future((rej, res) => {
       orders.start.push(tag)
       setTimeout(() => {

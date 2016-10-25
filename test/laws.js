@@ -40,7 +40,7 @@ test('Is stack safe', t => {
 test('Check Free structure function equivalencies', (t) => {
   const compose = (f, g) => (x) => f(g(x))
   const id = x => x
-  const tree = Free.liftF(1).map((a) => (b) => [a, b]).ap(Free.of(10))
+  const tree = Free.of(10).ap(Free.liftF(1).map((a) => (b) => [a, b]))
   const foldTree = (t) => t.foldMap((a) => Identity(a), Identity).x
   const treeEq = (a, b) => equals(foldTree(a), foldTree(b))
 
