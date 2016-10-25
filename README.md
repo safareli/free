@@ -5,30 +5,31 @@
 
 ## API
 
-Free implements [Functor](https://github.com/fantasyland/fantasy-land#functor), [Applicative](https://github.com/fantasyland/fantasy-land#applicative) and [Monad](https://github.com/fantasyland/fantasy-land#monad) specifications.
+Free implements [Functor](https://github.com/fantasyland/fantasy-land#functor), [Applicative](https://github.com/fantasyland/fantasy-land#applicative), [ChainRec](https://github.com/fantasyland/fantasy-land#chainrec) and [Monad](https://github.com/fantasyland/fantasy-land#monad) specifications.
 
-### Applicative, Functor and Monad functions:
+### Functor, Applicative, ChainRec and Monad functions:
 
 - Free.prototype.`map :: Free i a -> (a -> b) -> Free i b`
-- Free.`of :: a -> Free i a`
-- Free.prototype.`ap :: Free i (a -> b) -> Free i a -> Free i b`
+- Free.prototype.`ap :: Free i a -> Free i (a -> b) -> Free i b`
 - Free.prototype.`chain :: Free i a -> (a -> Free i b) -> Free i b`
+- Free.`chainRec :: ((a -> c, b -> c, a) -> Free i c, a) -> Free i b`
+- Free.`of :: a -> Free i a`
 
 
 ### Free structure functions:
 
 - Free.prototype.`hoist :: Free i a -> (i -> z) -> Free z a`
 - Free.`liftF :: i -> Free i a`
-- Free.prototype.`retract :: Monad m => Free m a -> (a -> m a) -> m a`
+- Free.prototype.`retract :: (ChainRec m, Monad m) => Free m a -> TypeRep m -> m a`
 - Free.prototype.`graft :: Free i a -> (i -> Free z a) -> Free z a`
-- Free.prototype.`foldMap :: Monad m => Free i a -> (i -> m a) -> (a -> m a) -> m a`
+- Free.prototype.`foldMap :: (ChainRec m, Monad m) => Free i a -> (i -> m a) -> TypeRep m -> m a`
 
 ### Free structure function equivalencies:
 
-- `graft(f) ≡ foldMap(f, Free.of)`
-- `hoist(f) ≡ foldMap(compose(liftF, f), Free.of)`
-- `retract(of) ≡ foldMap(id, of)`
-- `foldMap(f, of) ≡ compose(retract(of), hoist(f))`
+- `graft(f) ≡ foldMap(f, Free)`
+- `hoist(f) ≡ foldMap(compose(liftF, f), Free)`
+- `retract(M) ≡ foldMap(id, M)`
+- `foldMap(f, M) ≡ compose(retract(M), hoist(f))`
 
 ---
 

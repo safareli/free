@@ -5,7 +5,7 @@
   "main": "dist/free.js",
   "scripts": {
     "lint": "eslint --no-ignore .eslintrc.js --ext js src test tools *.js",
-    "watch": "nodemon -q -x 'tap -R spec test/*.js'",
+    "watch": "nodemon -q -x 'tap test/*.js'",
     "test": "tap test/*.js --coverage",
     "coverage": "tap --coverage-report=lcov --no-browser && codecov",
     "coverage:open": "tap --coverage-report=lcov",
@@ -40,6 +40,10 @@
     "url": "https://github.com/safareli/free/issues"
   },
   "homepage": "https://github.com/safareli/free#readme",
+  "dependencies": {
+    "fantasy-land": "1.0.x",
+    "sanctuary-type-classes": "0.3.0"
+  },
   "devDependencies": {
     "babel-cli": "6.10.1",
     "babel-core": "6.10.4",
@@ -51,18 +55,17 @@
     "commitizen": "2.8.2",
     "conventional-recommended-bump": "0.2.1",
     "cz-conventional-changelog": "1.1.6",
-    "data.task": "3.1.0",
     "eslint": "2.13.1",
     "eslint-config-standard": "5.3.1",
     "eslint-plugin-promise": "1.3.2",
     "eslint-plugin-standard": "1.3.2",
     "fantasy-combinators": "0.0.1",
-    "fantasy-identities": "0.0.1",
     "ghooks": "1.3.0",
     "jsverify": "0.7.1",
     "nodemon": "1.9.2",
     "npm-run-all": "2.3.0",
     "ramda": "0.21.0",
+    "ramda-fantasy": "0.7.0",
     "rimraf": "2.5.3",
     "semantic-release": "^4.3.5",
     "tap": "6.1.1",
