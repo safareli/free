@@ -1,5 +1,5 @@
 const Ɐ = require('jsverify')
-const { of, map, ap, chain } = require('sanctuary-type-classes')
+const { of, map, ap, chain, lift2, lift3 } = require('sanctuary-type-classes')
 const Free = require('../../src/free.js')
 const patchAll = require('../../src/fl-patch.js')
 const fl = require('fantasy-land')
@@ -24,7 +24,6 @@ module.exports = {
   map,
   ap,
   chain,
-  // TODO remove when after https://github.com/sanctuary-js/sanctuary-type-classes/pull/5 is merged
-  lift2: (f, x, y) => ap(map(f, x), y),
-  lift3: (f, x, y, z) => ap(ap(map(f, x), y), z),
+  lift2,
+  lift3,
 }
