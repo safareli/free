@@ -1,0 +1,15 @@
+codecov:
+  branch: master
+
+coverage:
+  status:
+    project:
+      default:
+        threshold: 5%
+
+    patch: off
+
+comment:
+  layout: "header, diff"
+  behavior: default
+  require_changes: true
