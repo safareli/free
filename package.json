@@ -42,7 +42,7 @@
   "homepage": "https://github.com/safareli/free#readme",
   "dependencies": {
     "fantasy-land": "1.0.x",
-    "sanctuary-type-classes": "0.3.0"
+    "sanctuary-type-classes": "1.1.x"
   },
   "devDependencies": {
     "babel-cli": "6.10.1",
