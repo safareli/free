@@ -2,7 +2,7 @@
   "name": "@safareli/free",
   "version": "0.0.0-placeholder",
   "description": "Combination of a free applicative functor and free monad",
-  "main": "dist/free.js",
+  "main": "dist/index.js",
   "scripts": {
     "lint": "eslint --no-ignore .eslintrc.js --ext js src test tools *.js",
     "watch": "nodemon -q -x 'tap test/*.js'",
@@ -41,8 +41,8 @@
   },
   "homepage": "https://github.com/safareli/free#readme",
   "dependencies": {
-    "fantasy-land": "1.0.x",
-    "sanctuary-type-classes": "3.0.0"
+    "fantasy-land": "3.0.x",
+    "sanctuary-type-classes": "0.3.0"
   },
   "devDependencies": {
     "babel-cli": "6.10.1",

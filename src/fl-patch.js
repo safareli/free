@@ -1,11 +1,17 @@
 const fl = require('fantasy-land')
 
-const patch = obj => Object.keys(fl).forEach(key => {
+const _patch = (obj, outObj) => Object.keys(fl).reduce((acc, key) => {
   if (typeof obj[key] === 'function') {
-    obj[fl[key]] = obj[key]
+    acc[fl[key]] = obj[key]
   }
-})
+  return acc
+}, outObj)
 
-const patchAll = (objs) => objs.forEach(patch)
+const patch = obj => Object.assign(
+  _patch(obj, {}),
+  obj
+)
 
-module.exports = patchAll
+patch.mutate = (obj) => _patch(obj, obj)
+
+module.exports = patch
