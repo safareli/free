@@ -17,7 +17,10 @@ test('misc', (t) => {
   t.throws(() => { list.cata({ Cons: (a, b) => a }) }, 'throws if all cases are not handled')
   t.throws(() => { List.Cons(1) }, 'when creating a tagged type with to many arguments throws error')
   t.throws(() => { List.Cons(1, 1, 1) }, 'when creating a tagged type with to many arguments throws error')
-  t.same(list.toString(), `List.Cons(${toString(a)}, List.Nil())`, 'toString on value should return correct value')
+  t.same(list.toString(), `List.Cons(${toString(a)}, List.Nil())`, 'toString on value should work')
+  t.same(List.toString(), 'List', 'toString on type should work')
+  t.same(List.Cons.toString(), 'List.Cons', 'toString on variant constructor should work')
+  t.same(List.Nil.toString(), 'List.Nil()', 'toString on unit variant should work')
   t.same(list.x, a, 'when checking head value should return correct value')
   t.same(list.xs, List.Nil, 'when checking value value should return correct value')
   t.same(list.cata({
