@@ -8,8 +8,9 @@
 ### Types
 ```hs
 data Par f a where
-  Pure  :: a -> Par f a
-  Apply :: f a -> Par f (a -> b) -> Par f b
+  Pure :: a -> Par f a
+  Lift :: f a -> Par f a
+  Ap :: Par f (a -> b) -> Par f a -> Par f b
 
 data Seq f a where
   Pure :: a -> Seq f a
@@ -37,7 +38,7 @@ data Interpreter f g m = Interpreter
 
 Implements [Functor][], [Applicative][], [ChainRec][] and [Monad][] specifications.
 
-It holds `Par`allel or `Seq`uential computations which are itself holding Concurrent computations. When operating on Concurrent structures it's behaving as Sequential. but in cases you want Parallel behaviour you can call `.par()` on it and it will return `Par` object which is only Applicative. then you can move back to `Concurrent` using `Concurrent.Par`.
+It holds `Par`allel or `Seq`uential computations which are itself holding Concurrent computations. When operating on Concurrent structures it's behaving as Sequential. but in cases you want Parallel behaviour you can call `.par()` on it and it will return `Par` object which is only Applicative. then you can move back to `Concurrent` using `Concurrent.fromPar`.
 
 
 #### Functor, Applicative, ChainRec and Monad functions:
@@ -50,9 +51,8 @@ It holds `Par`allel or `Seq`uential computations which are itself holding Concur
 
 #### other functions:
 
-- Concurrent.`Par :: Par (Concurrent f) a -> Concurrent f a`
-- Concurrent.`Seq :: Seq (Concurrent f) a -> Concurrent f a`
-- Concurrent.`Lift :: f a -> Concurrent f a`
+- Concurrent.`fromPar :: Par (Concurrent f) a -> Concurrent f a`
+- Concurrent.`fromSeq :: Seq (Concurrent f) a -> Concurrent f a`
 - Concurrent.`lift :: f a -> Concurrent f a`
 - Concurrent.prototype.`seq :: Concurrent f a ~> Seq (Concurrent f) a`
 - Concurrent.prototype.`par :: Concurrent f a ~> Par (Concurrent f) a`
@@ -78,8 +78,6 @@ Implements [Functor][], [Applicative][], [ChainRec][] and [Monad][] specificatio
 
 #### other functions:
 
-- Seq.`Pure :: a -> Seq f a`
-- Seq.`Roll :: f a -> (a -> Seq f b) -> Seq f b`
 - Seq.`lift :: f a -> Seq f a`
 - Seq.prototype.`foldSeq :: (Monad m, ChainRec m) => Seq f a ~> (Ɐ x. f x -> m x, TypeRep m) -> m a`
 - Seq.prototype.`hoistSeq :: Seq f a ~> (Ɐ x. f x -> g x) -> Seq g a`
@@ -100,8 +98,6 @@ Implements [Functor][] and [Applicative][] specifications.
 
 #### other functions:
 
-- Par.`Pure  :: a -> Par f a`
-- Par.`Apply :: f a -> Par f (a -> b) -> Par f b`
 - Par.`lift :: f a -> Par f a`
 - Par.prototype.`foldPar :: (Applicative g) => Par f a ~> (Ɐ x. f x -> g x, TypeRep g) -> g a`
 - Par.prototype.`hoistPar :: Par f a ~> (Ɐ x. f x -> g x) -> Par g a`
