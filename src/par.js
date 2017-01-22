@@ -36,9 +36,9 @@ Object.assign(Par.prototype, patch({
     while (true) {
       let argF = argsF.pop()
 
-      if (argF.tag === 'Ap') {
+      if (Ap.is(argF)) {
         const lengthInitial = argsF.length
-        while (argF.tag === 'Ap') {
+        while (Ap.is(argF)) {
           argsF.push(argF.x)
           argF = argF.f
         }
@@ -88,9 +88,9 @@ Object.assign(Par.prototype, patch({
 
 // Internal helper function for foldPar it folds only Pure and Lift nodes
 const foldArg = (node, f, T) => {
-  if (node.tag === 'Pure') {
+  if (Pure.is(node)) {
     return of(T, node.x)
-  } else if (node.tag === 'Lift') {
+  } else if (Lift.is(node)) {
     return f(node.i)
   }
 }

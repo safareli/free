@@ -24,10 +24,16 @@ test('misc', (t) => {
     Cons: (x, xs) => [x, xs],
     Nil: () => [],
   }), [list.x, list.xs], 'cata should work on Cons')
-  t.ok(List.Nil.cata({
+  t.same(List.Nil.cata({
     Cons: () => false,
     Nil: () => true,
-  }), 'cata should work on Nil')
+  }), true, 'cata should work on Nil')
+  t.same(List.is(list), true, '`is` on type works')
+  t.same(List.is({}), false, '`is` on type works')
+  t.same(List.Cons.is(list), true, '`is` on variant works')
+  t.same(List.Cons.is(list.xs), false, '`is` on variant works')
+  t.same(List.Nil.is(list), false, '`is` on unit value works')
+  t.same(List.Nil.is(list.xs), true, '`is` on unit value works')
   t.same(List.prototype.foo, list.foo, 'values in typerep.prototype are accassible from instance values')
   t.same(List.prototype.foo, List.Nil.foo, 'values in typerep.prototype are accassible from instance values')
   t.end()
