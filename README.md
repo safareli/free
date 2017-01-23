@@ -35,6 +35,12 @@ data Interpreter f g m = Interpreter
 
 
 
+### Asymptotic complexity
+
+On all structures, complexity of:
+- `chain`, `ap` and `map` is **constant**
+- `fold`, `hoist`, `retract` and `graft` is **linear**
+
 ### Concurrent
 
 Implements [Functor][], [Applicative][], [ChainRec][] and [Monad][] specifications.

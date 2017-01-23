@@ -58,10 +58,10 @@ Object.assign(Seq.prototype, patch({
         return of(T, done(focus.a))
       }
       while (Roll.is(focus)) {
-        // we are mutating `stack` for performance reasons but it's not
-        // an issue as it has no observable side effects 8-)
-        // if we wanted to do same in a pure, staticly typed language,
-        // some kind of efficient type aligned sequnce should be used
+        // We are mutating `stack` for performance reasons but it's not
+        // an issue as it's not an observable side effects 8-)
+        // If we wanted to do same in a staticly typed language,
+        // some kind of efficient type aligned sequnce should be used.
         stack.push(focus.y)
         focus = focus.x
       }
