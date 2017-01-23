@@ -1,17 +1,19 @@
 const { of, map, chain, chainRec } = require('sanctuary-type-classes')
 const patch = require('./fl-patch')
-const { id, compose, kcompose, union } = require('./utils')
+const { id, compose, union } = require('./utils')
 
 // data Seq f a where
 //   Pure :: a -> Seq f a
-//   Roll :: f a -> (a -> Seq f b) -> Seq f b
+//   Lift :: f a -> Seq f a
+//   Roll :: Seq f a -> (a -> Seq f b) -> Seq f b
 
 const Seq = union('Seq', {
   Pure: ['a'],
+  Lift: ['i'],
   Roll: ['x', 'y'],
 })
 
-const { Pure, Roll } = Seq
+const { Pure, Lift, Roll } = Seq
 
 const chainRecNext = (value) => ({ done: false, value })
 const chainRecDone = (value) => ({ done: true, value })
@@ -20,7 +22,7 @@ Object.assign(Seq, patch({
   // :: a -> Seq f a
   of: Pure,
   // :: f a -> Seq f a
-  lift: (x) => Roll(x, Pure),
+  lift: (i) => Lift(i),
   // :: ((a -> c, b -> c, a) -> Seq f c, a) -> Seq f b
   chainRec: (f, i) => chain(
     ({ done, value }) => done ? of(Seq, value) : chainRec(Seq, f, value),
@@ -39,17 +41,40 @@ Object.assign(Seq.prototype, patch({
   },
   // :: Seq f a ~> (a -> Seq f b) -> Seq f b
   chain(f) {
-    return this.cata({
-      Pure: (a) => f(a),
-      Roll: (x, y) => Seq.Roll(x, kcompose(f)(y)),
-    })
+    // this way in Roll.x we don't have any `Pure` node
+    if (Pure.is(this)) {
+      return f(this.a)
+    }
+    return Roll(this, f)
   },
   // :: (Monad m, ChainRec m) => Seq f a ~> (Ɐ x. f x -> m x, TypeRep m) -> m a
   foldSeq(f, T) {
-    return chainRec(T, (next, done, v) => v.cata({
-      Pure: (a) => map(done, of(T, a)),
-      Roll: (x, y) => map(compose(next)(y), f(x)),
-    }), this)
+    return chainRec(T, (next, done, { focus, stack }) => {
+      while (Pure.is(focus) && stack.length) {
+        const fn = stack.pop()
+        focus = fn(focus.a)
+      }
+      if (Pure.is(focus)) {
+        return of(T, done(focus.a))
+      }
+      while (Roll.is(focus)) {
+        // we are mutating `stack` for performance reasons but it's not
+        // an issue as it has no observable side effects 8-)
+        // if we wanted to do same in a pure, staticly typed language,
+        // some kind of efficient type aligned sequnce should be used
+        stack.push(focus.y)
+        focus = focus.x
+      }
+      // here `focus` must be `Lift`
+      return map((v) => {
+        if (stack.length === 0) {
+          return done(v)
+        }
+        const fn = stack.pop()
+        const nextFocus = fn(v)
+        return next({ focus: nextFocus, stack })
+      }, f(focus.i))
+    }, { focus: this, stack: [] })
   },
   // :: Seq f a ~> (Ɐ x. f x -> g x) -> Seq g a
   hoistSeq(f) {

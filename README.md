@@ -14,7 +14,8 @@ data Par f a where
 
 data Seq f a where
   Pure :: a -> Seq f a
-  Roll :: f a -> (a -> Seq f b) -> Seq f b
+  Lift :: f a -> Seq f a
+  Roll :: Seq f a -> (a -> Seq f b) -> Seq f b
 
 data Concurrent f a where
   Lift :: f a -> Concurrent f a
@@ -51,9 +52,9 @@ It holds `Par`allel or `Seq`uential computations which are itself holding Concur
 
 #### other functions:
 
-- Concurrent.`fromPar :: Par (Concurrent f) a -> Concurrent f a`
-- Concurrent.`fromSeq :: Seq (Concurrent f) a -> Concurrent f a`
 - Concurrent.`lift :: f a -> Concurrent f a`
+- Concurrent.`fromSeq :: Seq (Concurrent f) a -> Concurrent f a`
+- Concurrent.`fromPar :: Par (Concurrent f) a -> Concurrent f a`
 - Concurrent.prototype.`seq :: Concurrent f a ~> Seq (Concurrent f) a`
 - Concurrent.prototype.`par :: Concurrent f a ~> Par (Concurrent f) a`
 - Concurrent.prototype.`interpret :: (Monad m, ChainRec m, Applicative g) => Concurrent f a ~> Interpreter f g m -> m a`

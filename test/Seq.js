@@ -37,7 +37,7 @@ test('misc', (t) => {
   t.end()
 })
 
-test('Is stack safe', t => {
+test('Is stack safe when chain is right associated', t => {
   const runTimes = (n) => (v) => {
     const res = Seq.lift(n)
     if (n === 0) {
@@ -49,6 +49,21 @@ test('Is stack safe', t => {
   runTimes(MAX_STACK)().foldSeq(Future.of, Future).fork(t.error, (v) => t.equals(v, 0, 'Works with Future'))
   t.equals(runTimes(MAX_STACK)().hoistSeq(id).foldSeq(Identity.of, Identity).get(), 0, 'is Seq stack safe')
   t.equals(runTimes(MAX_STACK)().foldSeq(Identity.of, Identity).get(), 0, 'Works with Identity')
+
+  t.end()
+})
+
+test('Is stack safe when chain is left associated', t => {
+  const runTimes = (n) => {
+    let acc = Seq.lift(0)
+    for (let i = 0; i < n; i++) {
+      acc = acc.chain(Seq.lift)
+    }
+    return acc
+  }
+  runTimes(MAX_STACK).foldSeq(Future.of, Future).fork(t.error, (v) => t.equals(v, 0, 'Works with Future'))
+  t.equals(runTimes(MAX_STACK).hoistSeq(id).foldSeq(Identity.of, Identity).get(), 0, 'is Seq stack safe')
+  t.equals(runTimes(MAX_STACK).foldSeq(Identity.of, Identity).get(), 0, 'Works with Identity')
 
   t.end()
 })
