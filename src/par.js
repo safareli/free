@@ -1,12 +1,13 @@
+const daggy = require('daggy')
 const { of, ap } = require('sanctuary-type-classes')
 const patch = require('./fl-patch')
-const { id, compose, union } = require('./utils')
+const { id, compose } = require('./utils')
 
 // data Par f a where
 //  Pure :: a -> Par f a
 //  Lift :: f a -> Par f a
 //  Ap :: Par f (a -> b) -> Par f a -> Par f b
-const Par = union('Par', {
+const Par = daggy.taggedSum('Par', {
   Pure: ['x'],
   Lift: ['i'],
   Ap: ['f', 'x'],

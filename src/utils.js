@@ -1,5 +1,3 @@
-const union = require('./union')
-
 //    compose :: (b -> c) -> (a -> b) -> a -> c
 const compose = bc => ab => a => bc(ab(a))
 
@@ -9,5 +7,4 @@ const id = a => a
 module.exports = {
   compose,
   id,
-  union,
 }

@@ -41,6 +41,7 @@
   },
   "homepage": "https://github.com/safareli/free#readme",
   "dependencies": {
+    "daggy": "fantasyland/daggy#0704bc2b18f50e2c2f9fa5d8e05613f399b38e81",
     "fantasy-land": "3.0.x",
     "sanctuary-type-classes": "0.3.0",
     "sanctuary-type-identifiers": "1.0.0"

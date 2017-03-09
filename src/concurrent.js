@@ -1,8 +1,9 @@
+const daggy = require('daggy')
 const { map, chain, chainRec } = require('sanctuary-type-classes')
 const patch = require('./fl-patch')
 const _Par = require('./par')
 const _Seq = require('./seq')
-const { id, compose, union } = require('./utils')
+const { id, compose } = require('./utils')
 
 // data Interpreter f g m = Interpreter
 //   { runSeq :: Ɐ x. f x -> m x
@@ -18,7 +19,7 @@ const { id, compose, union } = require('./utils')
 //   Seq  :: Seq (Concurrent f) a -> Concurrent f a
 //   Par  :: Par (Concurrent f) a -> Concurrent f a
 
-const Concurrent = union('Concurrent', {
+const Concurrent = daggy.taggedSum('Concurrent', {
   Lift: ['a'],
   Seq: ['a'],
   Par: ['a'],

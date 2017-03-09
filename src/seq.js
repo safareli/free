@@ -1,13 +1,14 @@
+const daggy = require('daggy')
 const { of, map, chain, chainRec } = require('sanctuary-type-classes')
 const patch = require('./fl-patch')
-const { id, compose, union } = require('./utils')
+const { id, compose } = require('./utils')
 
 // data Seq f a where
 //   Pure :: a -> Seq f a
 //   Lift :: f a -> Seq f a
 //   Roll :: Seq f a -> (a -> Seq f b) -> Seq f b
 
-const Seq = union('Seq', {
+const Seq = daggy.taggedSum('Seq', {
   Pure: ['a'],
   Lift: ['i'],
   Roll: ['x', 'y'],
