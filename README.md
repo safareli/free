@@ -5,36 +5,132 @@
 
 ## API
 
-Free implements [Functor](https://github.com/fantasyland/fantasy-land#functor), [Applicative](https://github.com/fantasyland/fantasy-land#applicative), [ChainRec](https://github.com/fantasyland/fantasy-land#chainrec) and [Monad](https://github.com/fantasyland/fantasy-land#monad) specifications.
+### Types
+```hs
+data Par f a where
+  Pure :: a -> Par f a
+  Lift :: f a -> Par f a
+  Ap :: Par f (a -> b) -> Par f a -> Par f b
 
-### Functor, Applicative, ChainRec and Monad functions:
+data Seq f a where
+  Pure :: a -> Seq f a
+  Lift :: f a -> Seq f a
+  Roll :: Seq f a -> (a -> Seq f b) -> Seq f b
 
-- Free.prototype.`map :: Free i a -> (a -> b) -> Free i b`
-- Free.prototype.`ap :: Free i a -> Free i (a -> b) -> Free i b`
-- Free.prototype.`chain :: Free i a -> (a -> Free i b) -> Free i b`
-- Free.`chainRec :: ((a -> c, b -> c, a) -> Free i c, a) -> Free i b`
-- Free.`of :: a -> Free i a`
+data Concurrent f a where
+  Lift :: f a -> Concurrent f a
+  Seq  :: Seq (Concurrent f) a -> Concurrent f a
+  Par  :: Par (Concurrent f) a -> Concurrent f a
+
+data Interpreter f g m = Interpreter
+  { runSeq :: Ɐ x. f x -> m x
+  , runPar :: Ɐ x. f x -> g x
+  , seqToPar :: Ɐ x. m x -> g x
+  , parToSeq :: Ɐ x. g x -> m x
+  , Par :: TypeRep g
+  , Seq :: TypeRep m
+  }
+
+```
 
 
-### Free structure functions:
 
-- Free.prototype.`hoist :: Free i a -> (i -> z) -> Free z a`
-- Free.`liftF :: i -> Free i a`
-- Free.prototype.`retract :: (ChainRec m, Monad m) => Free m a -> TypeRep m -> m a`
-- Free.prototype.`graft :: Free i a -> (i -> Free z a) -> Free z a`
-- Free.prototype.`foldMap :: (ChainRec m, Monad m) => Free i a -> (i -> m a) -> TypeRep m -> m a`
+### Asymptotic complexity
 
-### Free structure function equivalencies:
+On all structures, complexity of:
+- `chain`, `ap` and `map` is **constant**
+- `fold`, `hoist`, `retract` and `graft` is **linear**
 
-- `graft(f) ≡ foldMap(f, Free)`
-- `hoist(f) ≡ foldMap(compose(liftF, f), Free)`
-- `retract(M) ≡ foldMap(id, M)`
-- `foldMap(f, M) ≡ compose(retract(M), hoist(f))`
+### Concurrent
+
+Implements [Functor][], [Applicative][], [ChainRec][] and [Monad][] specifications.
+
+It holds `Par`allel or `Seq`uential computations which are itself holding Concurrent computations. When operating on Concurrent structures it's behaving as Sequential. but in cases you want Parallel behaviour you can call `.par()` on it and it will return `Par` object which is only Applicative. then you can move back to `Concurrent` using `Concurrent.fromPar`.
+
+
+#### Functor, Applicative, ChainRec and Monad functions:
+
+- Concurrent.prototype.`map :: Concurrent f a ~> (a -> b) -> Concurrent f b`
+- Concurrent.prototype.`ap :: Concurrent f a ~> Concurrent f (a -> b) -> Concurrent f b`
+- Concurrent.prototype.`chain :: Concurrent f a ~> (a -> Concurrent f b) -> Concurrent f b`
+- Concurrent.`chainRec :: ((a -> c, b -> c, a) -> Concurrent f c, a) -> Concurrent f b`
+- Concurrent.`of :: a -> Concurrent f a`
+
+#### other functions:
+
+- Concurrent.`lift :: f a -> Concurrent f a`
+- Concurrent.`fromSeq :: Seq (Concurrent f) a -> Concurrent f a`
+- Concurrent.`fromPar :: Par (Concurrent f) a -> Concurrent f a`
+- Concurrent.prototype.`seq :: Concurrent f a ~> Seq (Concurrent f) a`
+- Concurrent.prototype.`par :: Concurrent f a ~> Par (Concurrent f) a`
+- Concurrent.prototype.`interpret :: (Monad m, ChainRec m, Applicative g) => Concurrent f a ~> Interpreter f g m -> m a`
+- Concurrent.prototype.`fold :: (Monad m, ChainRec m) => Concurrent f a ~> (Ɐ x. f x -> m x, TypeRep m) -> m a`
+- Concurrent.prototype.`hoist :: Concurrent f a ~> (Ɐ x. f x -> g x) -> Concurrent g a`
+- Concurrent.prototype.`retract :: (Monad m, ChainRec m) => Concurrent m a ~> TypeRep m -> m a`
+- Concurrent.prototype.`graft :: Concurrent f a ~> (Ɐ x. f x -> Concurrent g x) -> Concurrent g a`
+
+
+
+### Seq
+
+Implements [Functor][], [Applicative][], [ChainRec][] and [Monad][] specifications.
+
+#### Functor, Applicative, ChainRec and Monad functions:
+
+- Seq.prototype.`map :: Seq f a ~> (a -> b) -> Seq f b`
+- Seq.prototype.`ap :: Seq f a ~> Seq f (a -> b) -> Seq f b`
+- Seq.prototype.`chain :: Seq f a ~> (a -> Seq f b) -> Seq f b`
+- Seq.`chainRec :: ((a -> c, b -> c, a) -> Seq f c, a) -> Seq f b`
+- Seq.`of :: a -> Seq f a`
+
+#### other functions:
+
+- Seq.`lift :: f a -> Seq f a`
+- Seq.prototype.`foldSeq :: (Monad m, ChainRec m) => Seq f a ~> (Ɐ x. f x -> m x, TypeRep m) -> m a`
+- Seq.prototype.`hoistSeq :: Seq f a ~> (Ɐ x. f x -> g x) -> Seq g a`
+- Seq.prototype.`retractSeq :: (Monad m, ChainRec m) => Seq m a ~> TypeRep m -> m a`
+- Seq.prototype.`graftSeq :: Seq f a ~> (Ɐ x. f x -> Seq g x) -> Seq g a`
+
+
+
+### Par
+
+Implements [Functor][] and [Applicative][] specifications.
+
+#### Functor, Applicative, ChainRec and Monad functions:
+
+- Par.prototype.`map :: Par f a ~> (a -> b) -> Par f b`
+- Par.prototype.`ap :: Par f a ~> Par f (a -> b) -> Par f b`
+- Par.`of :: a -> Par f a`
+
+#### other functions:
+
+- Par.`lift :: f a -> Par f a`
+- Par.prototype.`foldPar :: (Applicative g) => Par f a ~> (Ɐ x. f x -> g x, TypeRep g) -> g a`
+- Par.prototype.`hoistPar :: Par f a ~> (Ɐ x. f x -> g x) -> Par g a`
+- Par.prototype.`retractPar :: (Applicative f) => Par f a ~> TypeRep f -> f a`
+- Par.prototype.`graftPar :: Par f a ~> (Ɐ x. f x -> Par g x) -> Par g a`
+
+
+
+### graft, hoist, retract and fold relations:
+
+> same for graftPar, graftSeq ... variations
+
+- `a.graft(f) ≡ a.fold(f, a.constructor)`
+- `a.hoist(f) ≡ a.fold(compose(a.constructor.lift, f), a.constructor)`
+- `a.retract(M) ≡ a.fold(id, M)`
+- `a.fold(f, M) ≡ compose(a.retract(M), a.hoist(f))`
 
 ---
 
-This module was started as port of [srijs/haskell-free-concurrent][haskell-free-concurrent] to JavaScript.
+This initial version of this module was based on a bit older version of [srijs/haskell-free-concurrent][haskell-free-concurrent-old], but it was not lawful, and from v2 it's based on more resent lawful [version][haskell-free-concurrent-resent].
 
+
+[Functor]: https://github.com/fantasyland/fantasy-land#functor
+[Applicative]: https://github.com/fantasyland/fantasy-land#applicative
+[ChainRec]: https://github.com/fantasyland/fantasy-land#chainrec
+[Monad]: https://github.com/fantasyland/fantasy-land#monad
 
 [build-image]: https://img.shields.io/travis/safareli/free/master.svg
 [build]: https://travis-ci.org/safareli/free
@@ -51,4 +147,6 @@ This module was started as port of [srijs/haskell-free-concurrent][haskell-free-
 [license-image]: https://img.shields.io/github/license/safareli/free.svg
 [license]: https://github.com/safareli/free/blob/master/LICENSE
 
-[haskell-free-concurrent]: https://github.com/srijs/haskell-free-concurrent/blob/1a56280e8d63e037cf8f9e57aa17ac6a8ac817a5/src/Control/Concurrent/Free.hs
+[haskell-free-concurrent-old]: https://github.com/srijs/haskell-free-concurrent/blob/1a56280e8d63e037cf8f9e57aa17ac6a8ac817a5/src/Control/Concurrent/Free.hs
+
+[haskell-free-concurrent-resent]: https://github.com/srijs/haskell-free-concurrent/blob/1a56280e8d63e037cf8f9e57aa17ac6a8ac817a5/src/Control/Concurrent/Free.hs
